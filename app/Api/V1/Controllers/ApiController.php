@@ -5,7 +5,6 @@ namespace App\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Api;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use MarcinOrlowski\ResponseBuilder\ResponseBuilder;
 
@@ -25,36 +24,40 @@ class ApiController extends Controller
             $keyword = $request->keyword;
         }
 
-        if ($request->has('author') && $request->filled('author')) {
-            $author = $request->author;
-        }
-
         if ($request->has('date') && $request->filled('date')) {
             $date = $request->date;
         }
 
-        if ($request->has('category') && $request->filled('category')) {
-            $category = $request->category;
-        }
-
-        if ($request->has('source') && $request->filled('source')) {
-            $source = $request->source;
-        }
-
         $apiModel = new Api();
 
-        $response_ny_time = $apiModel->fetchNewsFromNytimes($keyword, $date, $category, $author);
+        $response_ny_time = $apiModel->fetchNewsFromNytimes($keyword, $date);
         $response_ny_time = $this->standardizeNYTimesResponse($response_ny_time);
 
-        $response_guardian = $apiModel->fetchNewsFromGuardian($keyword, $date, $category, $author);
+        $response_guardian = $apiModel->fetchNewsFromGuardian($keyword, $date);
         $response_guardian = $this->standardizeGuardianResponse($response_guardian);
 
-        $response_news_api = $apiModel->fetchNewsFromNewsApi($keyword, $date, $category, $author, $source);
+        $response_news_api = $apiModel->fetchNewsFromNewsApi($keyword, $date);
         $response_news_api = $this->standardizeNewsApiResponse($response_news_api);
 
         $response = array_merge($response_ny_time, $response_guardian, $response_news_api);
 
-        $data = ['articles' => $response];
+        $response = collect($response);
+        if ($request->has('author') && $request->filled('author')) {
+            $author = $request->author;
+            $response = $response->where('author', $author);
+        }
+
+        if ($request->has('category') && $request->filled('category')) {
+            $category = $request->category;
+            $response = $response->where('category', $category);
+        }
+
+        if ($request->has('source') && $request->filled('source')) {
+            $source = $request->source;
+            $response = $response->where('source', $source);
+        }
+
+        $data = ['articles' => $response->values()->toArray()];
         return ResponseBuilder::asSuccess()->withData($data)->build();
     }
 

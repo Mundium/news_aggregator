@@ -12,21 +12,13 @@ class Helper
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function guardianApiCall($keyword = null, $date = null, $category = null, $author = null)
+    public function guardianApiCall($keyword = null, $date = null)
     {
         $urlParams = '';
-        if (!is_null($keyword) || !is_null($author)) {
-            if (is_null($keyword)){
-                $urlParams .= '&q=' . $author;
-            } elseif (is_null($author)) {
-                $urlParams .= '&q=' . $keyword;
-            } else {
-                $urlParams .= '&q=' . $keyword . ' OR ' . $author;
-            }
-
+        if (!is_null($keyword)) {
+            $urlParams .= '&q=' . $keyword;
         }
         if (!is_null($date)) $urlParams .= '&from-date=' . $date . '&to-date=' . $date;
-        if (!is_null($category)) $urlParams .= '&section=' . $category;
         $endpoint = config('app.guardian_url') . '?api-key=' . config('app.guardian_key'). '&show-fields=byline,thumbnail,bodyText&page-size=200' . $urlParams;
 
         $client = new Client();
@@ -46,23 +38,11 @@ class Helper
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function newsApiApiCall($keyword = null, $date = null, $category = null, $author = null, $source = null)
+    public function newsApiApiCall($keyword = null, $date = null)
     {
         $urlParams = '';
-        if (!is_null($keyword) || !is_null($author) || !is_null($category) || !is_null($source)) {
-            $urlParams .= '&q=';
-            if (!is_null($keyword)){
-                $urlParams .= $keyword . ' ';
-            }
-            if (!is_null($author)) {
-                $urlParams .= $author . ' ';
-            }
-            if (!is_null($category)) {
-                $urlParams .= $category . ' ';
-            }
-            if (!is_null($category)) {
-                $urlParams .= $source . ' ';
-            }
+        if (!is_null($keyword)) {
+            $urlParams .= '&q='.$keyword;
         } else {
             $urlParams .= '&q=*';
         }
@@ -86,20 +66,11 @@ class Helper
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function nyTimesApiCall($keyword = null, $date = null, $category = null, $author = null)
+    public function nyTimesApiCall($keyword = null, $date = null)
     {
         $urlParams = '';
-        if (!is_null($keyword) || !is_null($author) || !is_null($category)) {
-            $urlParams .= '&q=';
-            if (!is_null($keyword)){
-                $urlParams .= $keyword . ' ';
-            }
-            if (!is_null($author)) {
-                $urlParams .= $author . ' ';
-            }
-            if (!is_null($category)) {
-                $urlParams .= $category . ' ';
-            }
+        if (!is_null($keyword)) {
+            $urlParams .= '&q='.$keyword;
         }
         if (!is_null($date)) $urlParams .= '&begin_date=' . $date . '&begin_date=' . $date;
         $endpoint = config('app.ny_times_url') . 'articlesearch.json?api-key=' . config('app.ny_times_key') . $urlParams;

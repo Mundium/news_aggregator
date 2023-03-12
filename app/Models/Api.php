@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Helpers\Helper;
@@ -15,9 +16,13 @@ class Api extends Model
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function fetchNewsFromNytimes($keyword = null, $date = null, $category = null, $author = null)
+    public function fetchNewsFromNytimes($keyword = null, $date = null)
     {
-        return (new Helper)->nyTimesApiCall($keyword, $date, $category, $author);
+        if (!is_null($date)) {
+            $date = Carbon::createFromFormat('Y-m-d', $date)
+                ->format('Ymd');
+        }
+        return (new Helper)->nyTimesApiCall($keyword, $date);
     }
 
     /**
@@ -25,9 +30,9 @@ class Api extends Model
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function fetchNewsFromGuardian($keyword = null, $date = null, $category = null, $author = null)
+    public function fetchNewsFromGuardian($keyword = null, $date = null)
     {
-        return (new Helper)->guardianApiCall($keyword, $date, $category, $author);
+        return (new Helper)->guardianApiCall($keyword, $date);
     }
 
     /**
@@ -35,9 +40,9 @@ class Api extends Model
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function fetchNewsFromNewsApi($keyword = null, $date = null, $category = null, $author = null, $source = null)
+    public function fetchNewsFromNewsApi($keyword = null, $date = null)
     {
-        return (new Helper)->newsApiApiCall($keyword, $date, $category, $author, $source);
+        return (new Helper)->newsApiApiCall($keyword, $date);
     }
 
     /**
