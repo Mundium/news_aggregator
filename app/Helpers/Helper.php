@@ -27,7 +27,7 @@ class Helper
         }
         if (!is_null($date)) $urlParams .= '&from-date=' . $date . '&to-date=' . $date;
         if (!is_null($category)) $urlParams .= '&section=' . $category;
-        $endpoint = config('app.guardian_url') . '?api-key=' . config('app.guardian_key'). '&page-size=200' . $urlParams;
+        $endpoint = config('app.guardian_url') . '?api-key=' . config('app.guardian_key'). '&show-fields=byline,thumbnail,bodyText&page-size=200' . $urlParams;
 
         $client = new Client();
         if (Cache::has('guardian')) {

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Api;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use MarcinOrlowski\ResponseBuilder\ResponseBuilder;
 
 class ApiController extends Controller
@@ -41,11 +42,91 @@ class ApiController extends Controller
         }
 
         $apiModel = new Api();
-        // $response = $apiModel->fetchNewsFromNytimes($keyword, $date, $category, $author);
-        // $response = $apiModel->fetchNewsFromGuardian($keyword, $date, $category, $author);
-        $response = $apiModel->fetchNewsFromNewsApi($keyword, $date, $category, $author, $source);
+
+        $response_ny_time = $apiModel->fetchNewsFromNytimes($keyword, $date, $category, $author);
+        $response_ny_time = $this->standardizeNYTimesResponse($response_ny_time);
+
+        $response_guardian = $apiModel->fetchNewsFromGuardian($keyword, $date, $category, $author);
+        $response_guardian = $this->standardizeGuardianResponse($response_guardian);
+
+        $response_news_api = $apiModel->fetchNewsFromNewsApi($keyword, $date, $category, $author, $source);
+        $response_news_api = $this->standardizeNewsApiResponse($response_news_api);
+
+        $response = array_merge($response_ny_time, $response_guardian, $response_news_api);
 
         $data = ['articles' => $response];
         return ResponseBuilder::asSuccess()->withData($data)->build();
+    }
+
+    /**
+     * update the resource and return it into an array.
+     *
+     * @return array
+     */
+    public function standardizeNYTimesResponse($response)
+    {
+        $responseCollection = collect($response);
+        $updatedResponseCollection = $responseCollection->map(function ($data) {
+            return [
+                'id' => $data['_id'],
+                'category' => $data['section_name'] ?? null,
+                'source' => $data['source'] ?? null,
+                'author' => substr($data['byline']['original'], 3) ?? null,
+                'date' => $data['pub_date'] ?? null,
+                'description' => $data['snippet'] ?? null,
+                'url' => $data['web_url'] ?? null,
+                'image' => null,
+                'title' => $data['headline']['main'] ?? null,
+            ];
+        });
+        return $updatedResponseCollection->toArray();
+    }
+
+    /**
+     * update the resource and return it into an array.
+     *
+     * @return array
+     */
+    public function standardizeGuardianResponse($response)
+    {
+        $responseCollection = collect($response);
+        $updatedResponseCollection = $responseCollection->map(function ($data) {
+            return [
+                'id' => $data['id'],
+                'category' => $data['sectionName'] ?? null,
+                'source' => 'The guardian',
+                'author' => $data['fields']['byline'] ?? null,
+                'date' => $data['webPublicationDate'] ?? null,
+                'description' => $data['fields']['bodyText'] ?? null,
+                'url' => $data['webUrl'] ?? null,
+                'image' => $data['fields']['thumbnail'] ?? null,
+                'webTitle' => $data['webTitle'] ?? null,
+            ];
+        });
+        return $updatedResponseCollection->toArray();
+    }
+
+    /**
+     * update the resource and return it into an array.
+     *
+     * @return array
+     */
+    public function standardizeNewsApiResponse($response)
+    {
+        $responseCollection = collect($response);
+        $updatedResponseCollection = $responseCollection->map(function ($data) {
+            return [
+                'id' => Str::slug($data['title'].$data['author']),
+                'category' => null,
+                'source' => $data['source']['name'] ?? null,
+                'author' => $data['author'] ?? null,
+                'date' => $data['publishedAt'] ?? null,
+                'description' => $data['description'] ?? null,
+                'url' => $data['url'] ?? null,
+                'image' => $data['urlToImage'] ?? null,
+                'title' => $data['title'] ?? null,
+            ];
+        });
+        return $updatedResponseCollection->toArray();
     }
 }
