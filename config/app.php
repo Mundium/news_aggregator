@@ -54,6 +54,13 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'news_api_url' => env('NEWS_API_URL', null),
+    'news_api_key' => env('NEWS_API_KEY', null),
+    'guardian_url' => env('GUARDIAN_URL', null),
+    'guardian_key' => env('GUARDIAN_KEY', null),
+    'ny_times_url' => env('NY_TIMES_URL', null),
+    'ny_times_key' => env('NY_TIMES_KEY', null),
+
     'asset_url' => env('ASSET_URL', null),
 
     /*
@@ -175,6 +182,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        App\Providers\HelperServiceProvider::class,
+
     ],
 
     /*
@@ -229,6 +238,7 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        'Helper' => App\Helpers\Helper::class,
 
     ],
 

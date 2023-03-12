@@ -36,6 +36,13 @@ $api->version('v1', function (Router $api) {
         $api->get('me', 'App\\Api\\V1\\Controllers\\UserController@me');
         $api->put('users', 'App\\Api\\V1\\Controllers\\UserController@update');
 
+        # API
+        $api->get('/articles', 'App\\Api\\V1\\Controllers\\ApiController@displayNews');
+
+        # Categories and sources and authors
+        $api->get('/sources', 'App\\Api\\V1\\Controllers\\SourceController@getAllSources');
+        $api->get('/categories', 'App\\Api\\V1\\Controllers\\CategoryController@getAllCategories');
+        $api->get('/authors', 'App\\Api\\V1\\Controllers\\AuthorController@getAllAuthors');
     });
 
     $api->get('hello', function() {
