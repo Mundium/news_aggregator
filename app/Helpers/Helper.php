@@ -12,44 +12,22 @@ class Helper
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function makeApiCalls($url_params = null)
+    public function guardianApiCall($keyword = null, $date = null, $category = null, $author = null)
     {
-        try {
-            $endpoints = [
-                "guardian" => config('app.guardian_url') . '?' . '&api-key=' . config('app.guardian_key'),
-                "news_api" => config('app.news_api_url') . 'everything?q=bitcoin&apiKey=' . config('app.news_api_key'),
-                "ny_times" => config('app.ny_times_url') . 'articlesearch.json?&api-key=' . config('app.ny_times_key'),
-            ];
-
-            $results = [];
-            $client = new Client();
-            foreach ($endpoints as $key => $endpoint) {
-                if (Cache::has($key)) {
-                    $data = Cache::get($key);
-                } else {
-                    $response = $client->request('GET', $endpoint);
-                    $data = json_decode($response->getBody(), true);
-                    Cache::put($key, $data, 10);
-                }
-
-                $results[$key] = $data;
+        $urlParams = '';
+        if (!is_null($keyword) || !is_null($author)) {
+            if (is_null($keyword)){
+                $urlParams .= '&q=' . $author;
+            } elseif (is_null($author)) {
+                $urlParams .= '&q=' . $keyword;
+            } else {
+                $urlParams .= '&q=' . $keyword . ' OR ' . $author;
             }
-            return $results;
-        } catch (RequestException $e) {
-            return $e->getResponse();
-        }
-    }
 
-    /**
-     * @param $url_params
-     * @return mixed
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function guardianApiCall($url_params = null)
-    {
-        $endpoint = config('app.guardian_url') . '?api-key=' . config('app.guardian_key'). '&show-tags=contributor';
-        $results = [];
-        $listResults = [];
+        }
+        if (!is_null($date)) $urlParams .= '&from-date=' . $date . '&to-date=' . $date;
+        if (!is_null($category)) $urlParams .= '&section=' . $category;
+        $endpoint = config('app.guardian_url') . '?api-key=' . config('app.guardian_key'). '&page-size=200' . $urlParams;
 
         $client = new Client();
         if (Cache::has('guardian')) {
@@ -60,12 +38,82 @@ class Helper
             $results = $data['response']['results'] ?? [];
             Cache::put('guardian', $results, 10);
         }
+        return $results;
+    }
 
-        foreach ($results as $key => $result){
-            $listResults[$key] = $this->guardianToArray($result);
+    /**
+     * @param $url_params
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function newsApiApiCall($keyword = null, $date = null, $category = null, $author = null, $source = null)
+    {
+        $urlParams = '';
+        if (!is_null($keyword) || !is_null($author) || !is_null($category) || !is_null($source)) {
+            $urlParams .= '&q=';
+            if (!is_null($keyword)){
+                $urlParams .= $keyword . ' ';
+            }
+            if (!is_null($author)) {
+                $urlParams .= $author . ' ';
+            }
+            if (!is_null($category)) {
+                $urlParams .= $category . ' ';
+            }
+            if (!is_null($category)) {
+                $urlParams .= $source . ' ';
+            }
+        } else {
+            $urlParams .= '&q=*';
         }
+        if (!is_null($date)) $urlParams .= '&from=' . $date . '&to=' . $date;
+        $endpoint = config('app.news_api_url') . 'everything?apiKey=' . config('app.news_api_key') . $urlParams;
 
-        return $listResults;
+        $client = new Client();
+        if (Cache::has('news_api')) {
+            $results = Cache::get('news_api');
+        } else {
+            $response = $client->request('GET', $endpoint);
+            $data = json_decode($response->getBody(), true);
+            $results = $data['articles'] ?? [];
+            Cache::put('news_api', $results, 10);
+        }
+        return $results;
+    }
+
+    /**
+     * @param $url_params
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function nyTimesApiCall($keyword = null, $date = null, $category = null, $author = null)
+    {
+        $urlParams = '';
+        if (!is_null($keyword) || !is_null($author) || !is_null($category)) {
+            $urlParams .= '&q=';
+            if (!is_null($keyword)){
+                $urlParams .= $keyword . ' ';
+            }
+            if (!is_null($author)) {
+                $urlParams .= $author . ' ';
+            }
+            if (!is_null($category)) {
+                $urlParams .= $category . ' ';
+            }
+        }
+        if (!is_null($date)) $urlParams .= '&begin_date=' . $date . '&begin_date=' . $date;
+        $endpoint = config('app.ny_times_url') . 'articlesearch.json?api-key=' . config('app.ny_times_key') . $urlParams;
+
+        $client = new Client();
+        if (Cache::has('ny_times')) {
+            $results = Cache::get('ny_times');
+        } else {
+            $response = $client->request('GET', $endpoint);
+            $data = json_decode($response->getBody(), true);
+            $results = $data['response']['docs'] ?? [];
+            Cache::put('ny_times', $results, 10);
+        }
+        return $results;
     }
 
     /**

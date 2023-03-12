@@ -37,7 +37,7 @@ $api->version('v1', function (Router $api) {
         $api->put('users', 'App\\Api\\V1\\Controllers\\UserController@update');
 
         # API
-        $api->get('/articles', 'App\\Api\\V1\\Controllers\\ApiController@displayNews');
+        $api->get('/articles', 'App\\Api\\V1\\Controllers\\ApiController@index');
 
         # Categories and sources and authors
         $api->get('/sources', 'App\\Api\\V1\\Controllers\\SourceController@getAllSources');
