@@ -37,12 +37,23 @@ $api->version('v1', function (Router $api) {
         $api->put('users', 'App\\Api\\V1\\Controllers\\UserController@update');
 
         # API
-        $api->get('/articles', 'App\\Api\\V1\\Controllers\\ApiController@index');
+        $api->get('articles', 'App\\Api\\V1\\Controllers\\ApiController@index');
+
+        # settings
+        $api->get('user-authors', 'App\\Api\\V1\\Controllers\\UserAuthorController@index');
+        $api->post('user-authors', 'App\\Api\\V1\\Controllers\\UserAuthorController@store');
+        $api->delete('user-authors/{id}', 'App\\Api\\V1\\Controllers\\UserAuthorController@destroy');
+        $api->get('user-sources', 'App\\Api\\V1\\Controllers\\UserSourceController@index');
+        $api->post('user-sources', 'App\\Api\\V1\\Controllers\\UserSourceController@store');
+        $api->delete('user-sources/{id}', 'App\\Api\\V1\\Controllers\\UserSourceController@destroy');
+        $api->get('user-categories', 'App\\Api\\V1\\Controllers\\UserCategoryController@index');
+        $api->post('user-categories', 'App\\Api\\V1\\Controllers\\UserCategoryController@store');
+        $api->delete('user-categories/{id}', 'App\\Api\\V1\\Controllers\\UserCategoryController@destroy');
 
         # Categories and sources and authors
-        $api->get('/sources', 'App\\Api\\V1\\Controllers\\SourceController@getAllSources');
-        $api->get('/categories', 'App\\Api\\V1\\Controllers\\CategoryController@getAllCategories');
-        $api->get('/authors', 'App\\Api\\V1\\Controllers\\AuthorController@getAllAuthors');
+        $api->get('sources', 'App\\Api\\V1\\Controllers\\SourceController@getAllSources');
+        $api->get('categories', 'App\\Api\\V1\\Controllers\\CategoryController@getAllCategories');
+        $api->get('authors', 'App\\Api\\V1\\Controllers\\AuthorController@getAllAuthors');
     });
 
     $api->get('hello', function() {

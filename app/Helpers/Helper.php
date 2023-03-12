@@ -130,7 +130,7 @@ class Helper
             $news_api_response = $client->request('GET', $news_api);
             $news_api_data = json_decode($news_api_response->getBody(), true);
             $news_api_results = collect($news_api_data['articles'])->map(function ($data){
-                return [ strtolower(str_replace(' ', '_', $data['author'])) => $data['author']];
+                return [ 'id' => strtolower(str_replace(' ', '_', $data['author'])), 'name' => $data['author']];
 
             })->filter();
 
@@ -138,7 +138,7 @@ class Helper
             $guardian_data = json_decode($guardian_response->getBody(), true);
             $guardian_results = collect($guardian_data['response']['results'])->map(function ($data){
                 $tmp_data = collect($data['tags'])->map(function ($author){
-                    return [ strtolower(str_replace(' ', '_', $author['webTitle'])) => $author['webTitle']];
+                    return [ 'id' => strtolower(str_replace(' ', '_', $author['webTitle'])), 'name' => $author['webTitle']];
                 })->toArray();
                 return $tmp_data ? $tmp_data[0] : null;
             })->filter();
@@ -147,7 +147,7 @@ class Helper
             $ny_times_data = json_decode($ny_times_response->getBody(), true);
             $ny_times_results = collect($ny_times_data['response']['docs'])->map(function ($data){
                 $tmp_data = collect($data['byline']['person'])->map(function ($author){
-                    return [ strtolower($author['firstname'].'_'.$author['lastname']) => $author['firstname'].' '.$author['lastname']];
+                    return [ 'id' => strtolower($author['firstname'].'_'.$author['lastname']), 'name' => $author['firstname'].' '.$author['lastname']];
                 })->toArray();
                 return $tmp_data ? $tmp_data[0] : null;
             })->filter();
