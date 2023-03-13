@@ -4,7 +4,11 @@ namespace App\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Api;
+use App\Models\UserAuthor;
+use App\Models\UserCategory;
+use App\Models\UserSource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use MarcinOrlowski\ResponseBuilder\ResponseBuilder;
 
@@ -15,11 +19,29 @@ class ApiController extends Controller
      */
     public function index(Request $request)
     {
+        $user = Auth::guard()->user();
+        if (!$user) {
+            return ResponseBuilder::asError(404)->withMessage('user_not_found')->build();
+        }
+        $userAuthor = UserAuthor::where([
+            ['user_id', $user->id],
+        ])->get(['author_name'])->unique('author_id')->map(function($author) {
+            return $author->author_name;
+        })->toArray();
+        $userCategory = UserCategory::where([
+            ['user_id', $user->id],
+        ])->get(['category_name'])->unique('category_id')->map(function($category) {
+            return $category->category_name;
+        })->toArray();
+        $userSource = UserSource::where([
+            ['user_id', $user->id],
+        ])->get(['source_name'])->unique('source_id')->map(function($source) {
+            return $source->source_name;
+        })->toArray();
+
         $keyword = null;
         $date = null;
-        $category = null;
-        $source = null;
-        $author = null;
+
         if ($request->has('keyword') && $request->filled('keyword')) {
             $keyword = $request->keyword;
         }
@@ -42,19 +64,19 @@ class ApiController extends Controller
         $response = array_merge($response_ny_time, $response_guardian, $response_news_api);
 
         $response = collect($response);
-        if ($request->has('author') && $request->filled('author')) {
-            $author = $request->author;
-            $response = $response->where('author', $author);
+        if (($request->has('author') && $request->filled('author')) || $userAuthor) {
+            $userAuthor[] = $request->author;
+            $response = $response->whereIn('author', $userAuthor);
         }
 
-        if ($request->has('category') && $request->filled('category')) {
-            $category = $request->category;
-            $response = $response->where('category', $category);
+        if (($request->has('category') && $request->filled('category')) || $userCategory) {
+            $userCategory[] = $request->category;
+            $response = $response->whereIn('category', $userCategory);
         }
 
-        if ($request->has('source') && $request->filled('source')) {
-            $source = $request->source;
-            $response = $response->where('source', $source);
+        if (($request->has('source') && $request->filled('source')) || $userSource) {
+            $userSource[] = $request->source;
+            $response = $response->whereIn('source', $userSource);
         }
 
         $data = ['articles' => $response->values()->toArray()];

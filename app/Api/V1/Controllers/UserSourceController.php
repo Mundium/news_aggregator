@@ -50,7 +50,7 @@ class UserSourceController extends Controller
 
         $user = Auth::guard()->user();
         if (!$user) {
-            return ResponseBuilder::error(422, [], $v->errors()->messages());
+            return ResponseBuilder::asError(404)->withMessage('user_not_found')->build();
         }
 
         $inputs = $request->all();
