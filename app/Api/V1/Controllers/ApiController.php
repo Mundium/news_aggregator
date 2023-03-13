@@ -19,6 +19,8 @@ class ApiController extends Controller
      */
     public function index(Request $request)
     {
+        $page = $request->query('page', 1);
+        $offset = $request->query('offset', 4);
         $user = Auth::guard()->user();
         if (!$user) {
             return ResponseBuilder::asError(404)->withMessage('user_not_found')->build();
@@ -52,13 +54,13 @@ class ApiController extends Controller
 
         $apiModel = new Api();
 
-        $response_ny_time = $apiModel->fetchNewsFromNytimes($keyword, $date);
+        $response_ny_time = $apiModel->fetchNewsFromNytimes($keyword, $date, $page, $offset);
         $response_ny_time = $this->standardizeNYTimesResponse($response_ny_time);
 
-        $response_guardian = $apiModel->fetchNewsFromGuardian($keyword, $date);
+        $response_guardian = $apiModel->fetchNewsFromGuardian($keyword, $date, $page, $offset);
         $response_guardian = $this->standardizeGuardianResponse($response_guardian);
 
-        $response_news_api = $apiModel->fetchNewsFromNewsApi($keyword, $date);
+        $response_news_api = $apiModel->fetchNewsFromNewsApi($keyword, $date, $page, $offset);
         $response_news_api = $this->standardizeNewsApiResponse($response_news_api);
 
         $response = array_merge($response_ny_time, $response_guardian, $response_news_api);

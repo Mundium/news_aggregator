@@ -16,13 +16,13 @@ class Api extends Model
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function fetchNewsFromNytimes($keyword = null, $date = null)
+    public function fetchNewsFromNytimes($keyword = null, $date = null, $page, $offset)
     {
         if (!is_null($date)) {
             $date = Carbon::createFromFormat('Y-m-d', $date)
                 ->format('Ymd');
         }
-        return (new Helper)->nyTimesApiCall($keyword, $date);
+        return (new Helper)->nyTimesApiCall($keyword, $date, $page, $offset);
     }
 
     /**
@@ -30,9 +30,9 @@ class Api extends Model
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function fetchNewsFromGuardian($keyword = null, $date = null)
+    public function fetchNewsFromGuardian($keyword = null, $date = null, $page, $offset)
     {
-        return (new Helper)->guardianApiCall($keyword, $date);
+        return (new Helper)->guardianApiCall($keyword, $date, $page, $offset);
     }
 
     /**
@@ -40,9 +40,9 @@ class Api extends Model
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function fetchNewsFromNewsApi($keyword = null, $date = null)
+    public function fetchNewsFromNewsApi($keyword = null, $date = null, $page, $offset)
     {
-        return (new Helper)->newsApiApiCall($keyword, $date);
+        return (new Helper)->newsApiApiCall($keyword, $date, $page, $offset);
     }
 
     /**

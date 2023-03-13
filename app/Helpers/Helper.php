@@ -12,14 +12,14 @@ class Helper
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function guardianApiCall($keyword = null, $date = null)
+    public function guardianApiCall($keyword = null, $date = null, $page, $offset)
     {
         $urlParams = '';
         if (!is_null($keyword)) {
             $urlParams .= '&q=' . $keyword;
         }
         if (!is_null($date)) $urlParams .= '&from-date=' . $date . '&to-date=' . $date;
-        $endpoint = config('app.guardian_url') . '?api-key=' . config('app.guardian_key'). '&show-fields=byline,thumbnail,bodyText&page-size=200' . $urlParams;
+        $endpoint = config('app.guardian_url') . '?api-key=' . config('app.guardian_key'). '&page-size=' . $offset . '&page=' . $page . '&show-fields=byline,thumbnail,bodyText&' . $urlParams;
 
         $client = new Client();
         if (Cache::has('guardian')) {
@@ -38,7 +38,7 @@ class Helper
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function newsApiApiCall($keyword = null, $date = null)
+    public function newsApiApiCall($keyword = null, $date = null, $page, $offset)
     {
         $urlParams = '';
         if (!is_null($keyword)) {
@@ -47,7 +47,7 @@ class Helper
             $urlParams .= '&q=*';
         }
         if (!is_null($date)) $urlParams .= '&from=' . $date . '&to=' . $date;
-        $endpoint = config('app.news_api_url') . 'everything?apiKey=' . config('app.news_api_key') . $urlParams;
+        $endpoint = config('app.news_api_url') . 'everything?apiKey=' . config('app.news_api_key') . '&pageSize=' . $offset . '&page=' . $page . $urlParams;
 
         $client = new Client();
         if (Cache::has('news_api')) {
@@ -66,14 +66,14 @@ class Helper
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function nyTimesApiCall($keyword = null, $date = null)
+    public function nyTimesApiCall($keyword = null, $date = null, $page, $offset)
     {
         $urlParams = '';
         if (!is_null($keyword)) {
             $urlParams .= '&q='.$keyword;
         }
         if (!is_null($date)) $urlParams .= '&begin_date=' . $date . '&begin_date=' . $date;
-        $endpoint = config('app.ny_times_url') . 'articlesearch.json?api-key=' . config('app.ny_times_key') . $urlParams;
+        $endpoint = config('app.ny_times_url') . 'articlesearch.json?api-key=' . config('app.ny_times_key') . '&page=' . $page . $urlParams;
 
         $client = new Client();
         if (Cache::has('ny_times')) {
