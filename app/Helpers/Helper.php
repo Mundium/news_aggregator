@@ -1,9 +1,12 @@
 <?php
 
 namespace App\Helpers;
+use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Cache;
+use GuzzleHttp\Promise\Utils;
+use Illuminate\Support\Facades\Http;
 
 class Helper
 {
@@ -12,89 +15,54 @@ class Helper
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function guardianApiCall($keyword = null, $date = null, $page, $offset)
+    public function apiCall($keyword = null, $date = null, $page, $offset)
     {
-        $urlParams = '';
+        $guardianUrlParams = '';
+        $nyUrlParams = '';
+        $newUrlParams = '';
         if (!is_null($keyword)) {
-            $urlParams .= '&q=' . $keyword;
+            $guardianUrlParams .= '&q=' . $keyword;
+            $nyUrlParams .= '&q='.$keyword;
+            $newUrlParams .= '&q='.$keyword;
+        } else {
+            $newUrlParams .= '&q=*';
         }
-        if (!is_null($date)) $urlParams .= '&from-date=' . $date . '&to-date=' . $date;
-        $endpoint = config('app.guardian_url') . '?api-key=' . config('app.guardian_key'). '&page-size=' . $offset . '&page=' . $page . '&show-fields=byline,thumbnail,bodyText&' . $urlParams;
+        if (!is_null($date)) {
+            $dateNy = Carbon::createFromFormat('Y-m-d', $date)
+                ->format('Ymd');
+            $guardianUrlParams .= '&from-date=' . $date . '&to-date=' . $date;
+            $newUrlParams .= '&from=' . $date . '&to=' . $date;
+            $nyUrlParams .= '&begin_date=' . $dateNy . '&begin_date=' . $dateNy;
+        }
 
-        $client = new Client();
-        if (Cache::has('guardian')) {
-            $results = Cache::get('guardian');
+        $endpoint1 = config('app.ny_times_url') . 'articlesearch.json?api-key=' . config('app.ny_times_key') . '&page=' . $page . $nyUrlParams;
+        $endpoint2 = config('app.news_api_url') . 'everything?apiKey=' . config('app.news_api_key') . '&pageSize=' . $offset . '&page=' . $page . $newUrlParams;
+        $endpoint3 = config('app.guardian_url') . '?api-key=' . config('app.guardian_key'). '&page-size=' . $offset . '&page=' . $page . '&show-fields=byline,thumbnail,bodyText&' . $guardianUrlParams;
+
+        if (Cache::has('endpoints')) {
+            $results = Cache::get('endpoints');
         } else {
             try {
-                $response = $client->request('GET', $endpoint);
-                $data = json_decode($response->getBody(), true);
-                $results = $data['response']['results'] ?? [];
+                $promises = [];
+                $promises[] = Http::async()->get($endpoint1);
+                $promises[] = Http::async()->get($endpoint2);
+                $promises[] = Http::async()->get($endpoint3);
+
+                $responses = Utils::unwrap($promises);
+                foreach ($responses as $response){
+                    $response = json_decode($response->getBody(), true);
+                }
+
+                $results_ny = $responses[0]['response']['docs'] ?? [];
+                $results_news = $responses[1]['articles'] ?? [];
+                $results_guardian = $responses[2]['response']['results'] ?? [];
+
+                $results = ['guardian' => $results_guardian, 'ny_times' => $results_ny, 'news_api' => $results_news];
+
             } catch (RequestException $e){
-                $results = [];
+                $results = ['guardian' => [], 'ny_times' => [], 'news_api' => []];
             }
-            Cache::put('guardian', $results, 10);
-        }
-        return $results;
-    }
-
-    /**
-     * @param $url_params
-     * @return mixed
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function newsApiApiCall($keyword = null, $date = null, $page, $offset)
-    {
-        $urlParams = '';
-        if (!is_null($keyword)) {
-            $urlParams .= '&q='.$keyword;
-        } else {
-            $urlParams .= '&q=*';
-        }
-        if (!is_null($date)) $urlParams .= '&from=' . $date . '&to=' . $date;
-        $endpoint = config('app.news_api_url') . 'everything?apiKey=' . config('app.news_api_key') . '&pageSize=' . $offset . '&page=' . $page . $urlParams;
-
-        $client = new Client();
-        if (Cache::has('news_api')) {
-            $results = Cache::get('news_api');
-        } else {
-            try {
-                $response = $client->request('GET', $endpoint);
-                $data = json_decode($response->getBody(), true);
-                $results = $data['articles'] ?? [];
-            } catch (RequestException $e){
-                $results = [];
-            }
-            Cache::put('news_api', $results, 10);
-        }
-        return $results;
-    }
-
-    /**
-     * @param $url_params
-     * @return mixed
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function nyTimesApiCall($keyword = null, $date = null, $page, $offset)
-    {
-        $urlParams = '';
-        if (!is_null($keyword)) {
-            $urlParams .= '&q='.$keyword;
-        }
-        if (!is_null($date)) $urlParams .= '&begin_date=' . $date . '&begin_date=' . $date;
-        $endpoint = config('app.ny_times_url') . 'articlesearch.json?api-key=' . config('app.ny_times_key') . '&page=' . $page . $urlParams;
-
-        $client = new Client();
-        if (Cache::has('ny_times')) {
-            $results = Cache::get('ny_times');
-        } else {
-            try {
-                $response = $client->request('GET', $endpoint);
-                $data = json_decode($response->getBody(), true);
-                $results = $data['response']['docs'] ?? [];
-            } catch (RequestException $e){
-                $results = [];
-            }
-            Cache::put('ny_times', $results, 10);
+            Cache::put('endpoints', $results, 10);
         }
         return $results;
     }
@@ -108,13 +76,13 @@ class Helper
     {
         $endpoint = config('app.news_api_url') . 'sources?&apiKey=' . config('app.news_api_key');
 
-        $client = new Client();
         if (Cache::has('sources')) {
             $results = Cache::get('sources');
         } else {
             try {
-                $response = $client->request('GET', $endpoint);
-                $data = json_decode($response->getBody(), true);
+                $response[] = Http::async()->get( $endpoint);
+                $data = Utils::unwrap($response);
+                $data = json_decode($data[0]->getBody(), true);
                 $results = $data;
             } catch (RequestException $e){
                 $results = [];
@@ -143,38 +111,37 @@ class Helper
             $results = Cache::get('authors');
         } else {
             try {
-                $news_api_response = $client->request('GET', $news_api);
-                $news_api_data = json_decode($news_api_response->getBody(), true);
-                $news_api_results = collect($news_api_data['articles'])->map(function ($data){
-                    return [ 'id' => strtolower(str_replace(' ', '_', $data['author'])), 'name' => $data['author']];
-                })->filter();
-            } catch (RequestException $e){
-                $news_api_results = collect();
-            }
+                $promises = [];
+                $promises[] = Http::async()->get($ny_times);
+                $promises[] = Http::async()->get($news_api);
+                $promises[] = Http::async()->get($guardian);
 
-            try {
-                $guardian_response = $client->request('GET', $guardian);
-                $guardian_data = json_decode($guardian_response->getBody(), true);
-                $guardian_results = collect($guardian_data['response']['results'])->map(function ($data){
-                    $tmp_data = collect($data['tags'])->map(function ($author){
-                        return [ 'id' => strtolower(str_replace(' ', '_', $author['webTitle'])), 'name' => $author['webTitle']];
-                    })->toArray();
-                    return $tmp_data ? $tmp_data[0] : null;
-                })->filter();
-            } catch (RequestException $e){
-                $guardian_results = collect();
-            }
+                $responses = Utils::unwrap($promises);
+                foreach ($responses as $response){
+                    $response = json_decode($response->getBody(), true);
+                }
 
-            try {
-                $ny_times_response = $client->request('GET', $ny_times);
-                $ny_times_data = json_decode($ny_times_response->getBody(), true);
-                $ny_times_results = collect($ny_times_data['response']['docs'])->map(function ($data){
+                $ny_times_results = collect($responses[0]['response']['docs'])->map(function ($data){
                     $tmp_data = collect($data['byline']['person'])->map(function ($author){
                         return [ 'id' => strtolower($author['firstname'].'_'.$author['lastname']), 'name' => $author['firstname'].' '.$author['lastname']];
                     })->toArray();
                     return $tmp_data ? $tmp_data[0] : null;
                 })->filter();
+
+                $news_api_results = collect($responses[1]['articles'])->map(function ($data){
+                    return [ 'id' => strtolower(str_replace(' ', '_', $data['author'])), 'name' => $data['author']];
+                })->filter();
+
+                $guardian_results = collect($responses[2]['response']['results'])->map(function ($data){
+                    $tmp_data = collect($data['tags'])->map(function ($author){
+                        return [ 'id' => strtolower(str_replace(' ', '_', $author['webTitle'])), 'name' => $author['webTitle']];
+                    })->toArray();
+                    return $tmp_data ? $tmp_data[0] : null;
+                })->filter();
+
             } catch (RequestException $e){
+                $news_api_results = collect();
+                $guardian_results = collect();
                 $ny_times_results = collect();
             }
 

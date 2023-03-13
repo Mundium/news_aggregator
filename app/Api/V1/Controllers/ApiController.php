@@ -53,15 +53,11 @@ class ApiController extends Controller
         }
 
         $apiModel = new Api();
+        $response = $apiModel->fetchApi($keyword, $date, $page, $offset);
 
-        $response_ny_time = $apiModel->fetchNewsFromNytimes($keyword, $date, $page, $offset);
-        $response_ny_time = $this->standardizeNYTimesResponse($response_ny_time);
-
-        $response_guardian = $apiModel->fetchNewsFromGuardian($keyword, $date, $page, $offset);
-        $response_guardian = $this->standardizeGuardianResponse($response_guardian);
-
-        $response_news_api = $apiModel->fetchNewsFromNewsApi($keyword, $date, $page, $offset);
-        $response_news_api = $this->standardizeNewsApiResponse($response_news_api);
+        $response_ny_time = $this->standardizeNYTimesResponse($response['ny_times']);
+        $response_guardian = $this->standardizeGuardianResponse($response['guardian']);
+        $response_news_api = $this->standardizeNewsApiResponse($response['news_api']);
 
         $response = array_merge($response_ny_time, $response_guardian, $response_news_api);
 
@@ -81,7 +77,7 @@ class ApiController extends Controller
             $response = $response->whereIn('source', $userSource);
         }
 
-        $data = ['articles' => $response->values()->toArray()];
+        $data = ['articles' => $response->values()->toArray(), "current_page" => $page];
         return ResponseBuilder::asSuccess()->withData($data)->build();
     }
 
