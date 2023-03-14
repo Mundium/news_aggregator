@@ -104,7 +104,12 @@ Configure database connection in .env file
 
 - To visit documentation http://localhost:8000/api/documentation
 
-To stop the containers run `docker-compose kill`, and to remove them run `docker-compose rm`
+To bring all containers down
+
+    docker compose down
+
+
+To stop the containers run `docker compose kill`, and to remove them run `docker compose rm`
 
 ---
 
