@@ -57,23 +57,52 @@ Change directory
 
 Build and run the Docker containers
 
-    docker-compose up -d
+    docker compose up -d
 
 This builds the containers and runs them in the background, while this
 
-    docker-compose up
+    docker compose up
 
 builds the containers to outputs their logs to the console.
 
 Install Application
 
-    docker exec application_app_1 sh install.sh
+    docker compose exec news_aggregator_app bash
 
-- You should be able to visit your app at http://localhost:2020
+- !!! if it is your first time running the command please note that you have to repeat the steps in the Installation section
 
-- To visit documentation http://localhost:2020/api/documentation
+- instead of: 
 
-- The BaseUrl of Cabinet is http://cabinet.localhost:2020/api/tenant
+Configure database connection in .env file
+
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=database_name
+    DB_USERNAME=database_username
+    DB_PASSWORD=database_password
+
+
+- Do: 
+
+Configure database connection in .env file
+
+    DB_CONNECTION=mysql
+    DB_HOST=news_aggregator_inno_db
+    DB_PORT=52000
+    DB_DATABASE=news_aggregator
+    DB_USERNAME=root
+    DB_PASSWORD=root
+
+
+- run this command if you face this error "The stream or file "/myfolder/instantpay/storage/logs/laravel.log" could not be opened in append mode: failed to open stream: Permission denied"
+
+
+    chmod 777 -R storage bootstrap/cache
+
+- You should be able to visit your app at http://localhost:8000
+
+- To visit documentation http://localhost:8000/api/documentation
 
 To stop the containers run `docker-compose kill`, and to remove them run `docker-compose rm`
 
