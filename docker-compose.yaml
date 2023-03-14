@@ -1,0 +1,53 @@
+version: "3.8"
+services:
+  news_aggregator_app:
+    container_name: news_aggregator_app
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    expose:
+      - 9000
+    volumes:
+      - .:/usr/src/app
+      - ./public:/usr/src/app/public
+    depends_on:
+      - news_aggregator_db
+    networks:
+      - app_network
+
+  news_aggregator_nginx:
+    container_name: news_aggregator_nginx
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    volumes:
+      - ./public:/usr/src/app/public
+    ports:
+      - 8000:80
+    depends_on:
+      - news_aggregator_app
+    environment:
+      NGINX_FPM_HOST: news_aggregator_app
+      NGINX_ROOT: /usr/src/app/public
+    networks:
+      - app_network
+
+  news_aggregator_db:
+    container_name: news_aggregator_db
+    image: mysql:8.0.20
+    restart: always
+    volumes:
+      - ./storage/db-data:/var/lib/mysql
+    ports:
+      - 52000:3306
+    environment:
+      MYSQL_DATABASE: news_aggregator
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
