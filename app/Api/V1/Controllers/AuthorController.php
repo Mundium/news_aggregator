@@ -9,8 +9,37 @@ use MarcinOrlowski\ResponseBuilder\ResponseBuilder;
 class AuthorController extends Controller
 {
     /**
-     * @return mixed
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @OA\Get(
+     *      path="/api/authors",
+     *      tags={"Author"},
+     *      security={{"bearerAuth":{}}},
+     *      summary="Get all authors from third party api",
+     *      description="Returns authors",
+     *      @OA\Response(
+     *          response=200,
+     *          description="ok",
+     *          @OA\MediaType(
+     *           mediaType="application/json",
+     *      ),
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *      ),
+     * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   ),
+     *  )
+     *
      */
     public function getAllAuthors()
     {

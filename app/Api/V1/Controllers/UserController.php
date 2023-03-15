@@ -21,7 +21,7 @@ class UserController extends Controller
 
     /**
      * @OA\Get(
-     *      path="/api/auth/me",
+     *      path="/api/me",
      *      operationId="me",
      *      tags={"User"},
      *      security={{"bearerAuth":{}}},
@@ -90,11 +90,6 @@ class UserController extends Controller
      *         required=true,
      *         description="User id"
      *     ),
-     *   @OA\Parameter(
-     *         name="_method=PUT",
-     *         in="path",
-     *         required=true,
-     *      ),
      *   @OA\Response(response=200, description="successful operation"),
      *   @OA\Response(response=400, description="Validation errors"),
      *   @OA\Response(response=401, description="Unauthenticated"),

@@ -19,6 +19,76 @@
         }
     ],
     "paths": {
+        "/api/authors": {
+            "get": {
+                "tags": [
+                    "Author"
+                ],
+                "summary": "Get all authors from third party api",
+                "description": "Returns authors",
+                "operationId": "af9871289bfbea92e4f6631226721283",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/categories": {
+            "get": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Get all gatecories",
+                "description": "Returns categories",
+                "operationId": "68fc42766ed91ea9422d1068e127aea6",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/auth/login": {
             "post": {
                 "tags": [
@@ -258,9 +328,6 @@
                                     },
                                     "last_name": {
                                         "type": "text"
-                                    },
-                                    "phone": {
-                                        "type": "text"
                                     }
                                 },
                                 "type": "object"
@@ -290,7 +357,245 @@
                 }
             }
         },
-        "/api/auth/me": {
+        "/api/sources": {
+            "get": {
+                "tags": [
+                    "Source"
+                ],
+                "summary": "Get all sources from third party api",
+                "description": "Returns sources",
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user-authors": {
+            "get": {
+                "tags": [
+                    "Author"
+                ],
+                "summary": "list all user-author records",
+                "operationId": "d0245e41ef72a1ff8544fae75d2f50a0",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Author"
+                ],
+                "summary": "Add user-author",
+                "operationId": "7f11bad2d6b17eb48f3e5b837ffc3937",
+                "requestBody": {
+                    "description": "user-author object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserAuthorRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Validation errors"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user-authors/{id}": {
+            "delete": {
+                "tags": [
+                    "Author"
+                ],
+                "summary": "delete user-authors record",
+                "operationId": "1d269d958e83664d07765dd4941cd16e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "user-author id",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "description": "user-author object",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Validation errors"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user-categories": {
+            "get": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "list all user-category records",
+                "operationId": "1e7524eb5784f5c5d76ca9f6cf569299",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Add user-category",
+                "operationId": "c9c3c94ba01a456f38a4b2319ab820e2",
+                "requestBody": {
+                    "description": "user-category object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserCategoryRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Validation errors"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user-categories/{id}": {
+            "delete": {
+                "tags": [
+                    "Category"
+                ],
+                "summary": "delete user-category record",
+                "operationId": "872ad02dd1601f78991800cd554acc7f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "user-categories id",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "description": "user-categories object",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Validation errors"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/me": {
             "get": {
                 "tags": [
                     "User"
@@ -338,11 +643,6 @@
                         "in": "path",
                         "description": "User id",
                         "required": true
-                    },
-                    {
-                        "name": "_method=PUT",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -364,6 +664,196 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/api/user-sources": {
+            "get": {
+                "tags": [
+                    "Source"
+                ],
+                "summary": "list all user-source records",
+                "operationId": "2dcde1e1252c3dda946f1348cfcee713",
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Source"
+                ],
+                "summary": "Add user-source",
+                "operationId": "2c74a580ee1dbb2b0a8fe13fb79b9169",
+                "requestBody": {
+                    "description": "user-source object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserSourceRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Validation errors"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user-sources/{id}": {
+            "delete": {
+                "tags": [
+                    "Source"
+                ],
+                "summary": "delete user-source record",
+                "operationId": "26d4c47a8c7fff2955abd34147c8f006",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "user-sources id",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "description": "user-sources object",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Validation errors"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "UserRequest": {
+                "title": "User Request",
+                "required": [
+                    "last_name",
+                    "first_name",
+                    "email"
+                ],
+                "properties": {
+                    "last_name": {
+                        "description": "Class User",
+                        "type": "string"
+                    },
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "UserAuthorRequest": {
+                "title": "User Author Request",
+                "required": [
+                    "user_id",
+                    "author_name",
+                    "author_id"
+                ],
+                "properties": {
+                    "user_id": {
+                        "description": "Class UserAuthor",
+                        "type": "integer"
+                    },
+                    "author_name": {
+                        "type": "string"
+                    },
+                    "author_id": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "UserCategoryRequest": {
+                "title": "User Category Request",
+                "required": [
+                    "user_id",
+                    "category_name",
+                    "category_id"
+                ],
+                "properties": {
+                    "user_id": {
+                        "description": "Class UserCategory",
+                        "type": "integer"
+                    },
+                    "category_name": {
+                        "type": "string"
+                    },
+                    "category_id": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "UserSourceRequest": {
+                "title": "User Source Request",
+                "required": [
+                    "user_id",
+                    "source_name",
+                    "source_id"
+                ],
+                "properties": {
+                    "user_id": {
+                        "description": "Class UserSource",
+                        "type": "integer"
+                    },
+                    "source_name": {
+                        "type": "string"
+                    },
+                    "source_id": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
             }
         }
     }

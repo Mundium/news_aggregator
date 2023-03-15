@@ -30,7 +30,6 @@ class SignUpController extends Controller
      *               @OA\Property(property="email", type="email"),
      *               @OA\Property(property="password", type="password"),
      *               @OA\Property(property="last_name", type="text"),
-     *               @OA\Property(property="phone", type="text"),
      *            ),
      *        ),
      *    ),

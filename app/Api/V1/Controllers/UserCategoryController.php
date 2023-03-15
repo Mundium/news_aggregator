@@ -12,8 +12,18 @@ use MarcinOrlowski\ResponseBuilder\ResponseBuilder;
 class UserCategoryController extends Controller
 {
     /**
-     * Display a listing of the resource.
      *
+     * @OA\Get(
+     *   path="/api/user-categories",
+     *   summary="list all user-category records",
+     *   tags={"Category"},
+     *
+     *   @OA\Response(response=200, description="successful operation"),
+     *   @OA\Response(response=403, description="Forbidden"),
+     *   @OA\Response(response=404, description="Not found"),
+     *   security={{"bearerAuth":{}}}
+     *
+     * )
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function index()
@@ -33,8 +43,23 @@ class UserCategoryController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
      *
+     * @OA\Post(
+     *   path="/api/user-categories",
+     *   summary="Add user-category",
+     *   tags={"Category"},
+     *  @OA\RequestBody(
+     *         required=true,
+     *         description="user-category object",
+     *         @OA\JsonContent(ref="#/components/schemas/UserCategoryRequest")
+     *     ),
+     *   @OA\Response(response=200, description="successful operation"),
+     *   @OA\Response(response=400, description="Validation errors"),
+     *   @OA\Response(response=401, description="Unauthenticated"),
+     *   @OA\Response(response=403, description="Forbidden"),
+     *   security={{"bearerAuth":{}}}
+     *
+     * )
      * @param  \Illuminate\Http\Request  $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -64,9 +89,31 @@ class UserCategoryController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
      *
-     * @param  \App\Models\UserAuthor  $userAuthor
+     * @OA\Delete(
+     *   path="/api/user-categories/{id}",
+     *   summary="delete user-category record",
+     *   tags={"Category"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="user-categories id"
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="user-categories object",
+     *         @OA\Parameter(name="auser_category_id"),
+     *     ),
+     *   @OA\Response(response=200, description="successful operation"),
+     *   @OA\Response(response=400, description="Validation errors"),
+     *   @OA\Response(response=401, description="Unauthenticated"),
+     *   @OA\Response(response=403, description="Forbidden"),
+     *   security={{"bearerAuth":{}}}
+     *
+     * )
+     * @param Request $request
+     * @param $id
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function destroy($id)
