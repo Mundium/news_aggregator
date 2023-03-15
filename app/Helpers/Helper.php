@@ -123,18 +123,18 @@ class Helper
 
                 $ny_times_results = collect($responses[0]['response']['docs'])->map(function ($data){
                     $tmp_data = collect($data['byline']['person'])->map(function ($author){
-                        return [ 'id' => strtolower($author['firstname'].'_'.$author['lastname']), 'name' => $author['firstname'].' '.$author['lastname']];
+                        return [ 'id' => mb_strtolower($author['firstname'].'_'.$author['lastname']), 'name' => $author['firstname'].' '.$author['lastname']];
                     })->toArray();
                     return $tmp_data ? $tmp_data[0] : null;
                 })->filter();
 
                 $news_api_results = collect($responses[1]['articles'])->map(function ($data){
-                    return [ 'id' => strtolower(str_replace(' ', '_', $data['author'])), 'name' => $data['author']];
+                    return [ 'id' => mb_strtolower(str_replace(' ', '_', $data['author'])), 'name' => $data['author']];
                 })->filter();
 
                 $guardian_results = collect($responses[2]['response']['results'])->map(function ($data){
                     $tmp_data = collect($data['tags'])->map(function ($author){
-                        return [ 'id' => strtolower(str_replace(' ', '_', $author['webTitle'])), 'name' => $author['webTitle']];
+                        return [ 'id' => mb_strtolower(str_replace(' ', '_', $author['webTitle'])), 'name' => $author['webTitle']];
                     })->toArray();
                     return $tmp_data ? $tmp_data[0] : null;
                 })->filter();
