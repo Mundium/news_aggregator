@@ -145,12 +145,12 @@ class Helper
                 $ny_times_results = collect();
             }
 
-            $results = $news_api_results->merge($guardian_results->merge($ny_times_results))->toArray();
+            $results = $news_api_results->merge($guardian_results->merge($ny_times_results));
 
             Cache::put('authors', $results, 10);
         }
 
-        return $results;
+        return $results->unique()->values()->toArray();
     }
 
 }
