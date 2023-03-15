@@ -19,6 +19,78 @@
         }
     ],
     "paths": {
+        "/api/articles": {
+            "get": {
+                "tags": [
+                    "Article"
+                ],
+                "summary": "Get a list of all articles",
+                "operationId": "d471d341128d063c32d6c0fd54dc7d03",
+                "parameters": [
+                    {
+                        "name": "offset",
+                        "in": "path",
+                        "description": "custom pagination ex= 1à, 5, 8",
+                        "required": false
+                    },
+                    {
+                        "name": "page",
+                        "in": "path",
+                        "description": "filter with page",
+                        "required": false
+                    },
+                    {
+                        "name": "keyword",
+                        "in": "path",
+                        "description": "filter with keyword",
+                        "required": false
+                    },
+                    {
+                        "name": "category",
+                        "in": "path",
+                        "description": "filter with category",
+                        "required": false
+                    },
+                    {
+                        "name": "source",
+                        "in": "path",
+                        "description": "filter with source",
+                        "required": false
+                    },
+                    {
+                        "name": "date",
+                        "in": "path",
+                        "description": "filter with date",
+                        "required": false
+                    },
+                    {
+                        "name": "author",
+                        "in": "path",
+                        "description": "filter with author",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "400": {
+                        "description": "Validation errors"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/authors": {
             "get": {
                 "tags": [

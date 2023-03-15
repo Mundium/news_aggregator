@@ -15,6 +15,59 @@ use MarcinOrlowski\ResponseBuilder\ResponseBuilder;
 class ApiController extends Controller
 {
     /**
+     *
+     * @OA\Get(
+     *     path="/api/articles",
+     *     summary="Get a list of all articles",
+     *     tags={"Article"},
+     *     @OA\Parameter(
+     *         name="offset",
+     *         in="path",
+     *         required=false,
+     *         description="custom pagination ex= 1à, 5, 8",
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="path",
+     *         description="filter with page",
+     *         required=false,
+     *      ),
+     *     @OA\Parameter(
+     *         name="keyword",
+     *         in="path",
+     *         description="filter with keyword",
+     *         required=false,
+     *      ),
+     *     @OA\Parameter(
+     *         name="category",
+     *         in="path",
+     *         description="filter with category",
+     *         required=false,
+     *      ),
+     *     @OA\Parameter(
+     *         name="source",
+     *         in="path",
+     *         description="filter with source",
+     *         required=false,
+     *      ),
+     *     @OA\Parameter(
+     *         name="date",
+     *         in="path",
+     *         description="filter with date",
+     *         required=false,
+     *      ),
+     *     @OA\Parameter(
+     *         name="author",
+     *         in="path",
+     *         description="filter with author",
+     *         required=false,
+     *      ),
+     *     @OA\Response(response=200, description="successful operation"),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden"),
+     *     @OA\Response(response=400, description="Validation errors"),
+     *     security={{"bearerAuth":{}}}
+     * )
      * @param Request $request
      */
     public function index(Request $request)
