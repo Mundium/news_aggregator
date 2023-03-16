@@ -39,8 +39,8 @@ class Helper
         $endpoint2 = config('app.news_api_url') . 'everything?apiKey=' . config('app.news_api_key') . '&pageSize=' . $offset . '&page=' . $page . $newUrlParams;
         $endpoint3 = config('app.guardian_url') . '?api-key=' . config('app.guardian_key'). '&page-size=' . $offset . '&page=' . $page . '&show-fields=byline,thumbnail,bodyText&' . $guardianUrlParams;
 
-        if (Cache::has('endpoints')) {
-            $results = Cache::get('endpoints');
+        if (Cache::has('endpoints' . $page)) {
+            $results = Cache::get('endpoints' . $page);
         } else {
             try {
                 $promises = [];
@@ -62,7 +62,7 @@ class Helper
             } catch (RequestException $e){
                 $results = ['guardian' => [], 'ny_times' => [], 'news_api' => []];
             }
-            Cache::put('endpoints', $results, 10);
+            Cache::put('endpoints' . $page, $results, 10);
         }
         return $results;
     }
