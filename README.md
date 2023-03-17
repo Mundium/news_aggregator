@@ -35,6 +35,8 @@ Start the local development server
 
 You can now test the api from http://localhost:8000/api/...
 
+## The API documentation is on : http://localhost:8000/api/documentation
+
 ---
 
 ##Run Application with Docker
