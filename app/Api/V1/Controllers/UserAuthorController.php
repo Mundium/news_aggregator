@@ -83,7 +83,7 @@ class UserAuthorController extends Controller
         $userAuthor = new UserAuthor($inputs);
 
         if ($userAuthor->save()) {
-            return ResponseBuilder::success();
+            return ResponseBuilder::success($userAuthor->toArray());
         }
         return ResponseBuilder::error(422, [], $v->errors()->messages());
     }

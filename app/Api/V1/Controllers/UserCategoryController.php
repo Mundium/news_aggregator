@@ -83,7 +83,7 @@ class UserCategoryController extends Controller
         $userCategory = new UserCategory($inputs);
 
         if ($userCategory->save()) {
-            return ResponseBuilder::success();
+            return ResponseBuilder::success($userCategory->toArray());
         }
         return ResponseBuilder::error(422, [], $v->errors()->messages());
     }

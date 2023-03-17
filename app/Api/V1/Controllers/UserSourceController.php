@@ -83,7 +83,7 @@ class UserSourceController extends Controller
         $userSource = new UserSource($inputs);
 
         if ($userSource->save()) {
-            return ResponseBuilder::success();
+            return ResponseBuilder::success($userSource->toArray());
         }
         return ResponseBuilder::error(422, [], $v->errors()->messages());
     }
